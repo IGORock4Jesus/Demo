@@ -3,13 +3,16 @@
 #include "camera.h"
 #include <thread>
 #include "grid.h"
+#include <list>
+#include "ui.h"
 
+Camera camera;
 
-namespace 
+namespace
 {
 	std::thread thread;
 	bool runned;
-
+	std::list<DeviceDependent*> dependents;
 }
 
 struct Vertex
@@ -34,10 +37,12 @@ void rendering() {
 	{
 		auto device = beginRenderScene();
 
-		renderCamera(device);
+		camera.Render(device);
 
 		renderGrid(device);
 		renderTestPrimitive(device);
+
+		UI::Render(device);
 
 		endRenderScene();
 
@@ -57,10 +62,21 @@ void stopRendering() {
 	if (thread.joinable())
 		thread.join();
 }
+void preReset(LPDIRECT3DDEVICE9 device) {
+	for (auto d : dependents) {
+		d->BeforeReset(device);
+	}
+}
+void postReset(LPDIRECT3DDEVICE9 device) {
+	for (auto d : dependents) {
+		d->AfterReset(device);
+	}
+}
 bool initializeGraphics() {
 	if (!initializeRenderer())
 		return false;
-	initializeCamera();
+	registerPreReset(preReset);
+	registerPostReset(postReset);
 	startRendering();
 	return true;
 }
@@ -69,4 +85,11 @@ void releaseGraphics()
 {
 	stopRendering();
 	releaseRenderer();
+}
+
+void registerDependent(DeviceDependent* dependent) {
+	dependents.push_back(dependent);
+}
+void unregisterDependent(DeviceDependent* dependent) {
+	dependents.remove(dependent);
 }

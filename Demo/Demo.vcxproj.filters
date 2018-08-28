@@ -4,17 +4,25 @@
     <ClCompile Include="program.cpp" />
     <ClCompile Include="renderer.cpp" />
     <ClCompile Include="window.cpp" />
-    <ClCompile Include="camera.cpp" />
     <ClCompile Include="graphics.cpp" />
     <ClCompile Include="grid.cpp" />
+    <ClCompile Include="Camera.cpp" />
+    <ClCompile Include="Mesh.cpp" />
+    <ClCompile Include="ui.cpp" />
+    <ClCompile Include="Font.cpp" />
+    <ClCompile Include="DeviceDependent.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="renderer.h" />
     <ClInclude Include="texture.h" />
     <ClInclude Include="window.h" />
-    <ClInclude Include="camera.h" />
     <ClInclude Include="graphics.h" />
     <ClInclude Include="grid.h" />
     <ClInclude Include="vertex.h" />
+    <ClInclude Include="Camera.h" />
+    <ClInclude Include="Mesh.h" />
+    <ClInclude Include="ui.h" />
+    <ClInclude Include="Font.h" />
+    <ClInclude Include="DeviceDependent.h" />
   </ItemGroup>
 </Project>

@@ -2,6 +2,7 @@
 #include <d3dx9.h>
 #include "window.h"
 #include "graphics.h"
+#include <list>
 
 
 namespace {
@@ -12,18 +13,39 @@ namespace {
 		std::string filename;
 		int id;
 	};
-
+	std::list<DeviceHandler> preResetCallbacks, postResetCallbacks;
+	D3DPRESENT_PARAMETERS pp{ 0 };
 }
 
-LPDIRECT3DDEVICE9 beginRenderScene(){
-	device->Clear(0, nullptr, D3DCLEAR_TARGET|D3DCLEAR_ZBUFFER|D3DCLEAR_STENCIL, 0xff404040, 1.0f, 0);
+LPDIRECT3DDEVICE9 beginRenderScene() {
+	device->Clear(0, nullptr, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER | D3DCLEAR_STENCIL, 0xff404040, 1.0f, 0);
 	device->BeginScene();
 	return device;
 }
 
+void processError(HRESULT hr) {
+	if (hr == D3DERR_DEVICELOST) {
+		for (auto h : preResetCallbacks) {
+			h(device);
+		}
+
+		device->Reset(&pp);
+
+		for (auto h : postResetCallbacks) {
+			h(device);
+		}
+	}
+	else if (hr == D3DERR_DEVICENOTRESET) {
+		device->Reset(&pp);
+	}
+}
+
 void endRenderScene() {
-	device->EndScene();
-	device->Present(0, 0, 0, 0);
+	HRESULT hr = S_OK;
+	if (FAILED(hr = device->EndScene()))
+		processError(hr);
+	if (FAILED(hr = device->Present(0, 0, 0, 0)))
+		processError(hr);
 }
 
 bool initializeRenderer() {
@@ -68,4 +90,11 @@ void releaseRenderer() {
 
 LPDIRECT3DDEVICE9 getRendererDevice() {
 	return device;
+}
+
+void registerPreReset(DeviceHandler handler) {
+	preResetCallbacks.push_back(handler);
+}
+void registerPostReset(DeviceHandler handler) {
+	postResetCallbacks.push_back(handler);
 }

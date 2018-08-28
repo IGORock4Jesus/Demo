@@ -1,6 +1,7 @@
 #include "window.h"
 #include "camera.h"
 
+extern Camera camera;
 
 namespace {
 	HWND handle;
@@ -16,13 +17,17 @@ LRESULT CALLBACK WndProc(HWND h, UINT m, WPARAM w, LPARAM l) {
 		return 0;
 	case WM_KEYDOWN:
 		if (w == 0x57)
-			moveCamera({ 0, 1, 0 });
+			camera.Fly(1);
 		else if (w == 0x53)
-			moveCamera({ 0, -1, 0 });
+			camera.Fly(-1);
 		if (w == 0x41)
-			moveCamera({ -1, 0, 0 });
+			camera.Strafe(-1);
 		else if (w == 0x44)
-			moveCamera({ 1, 0, 0 });
+			camera.Strafe(1);
+		if (w == 0x52)
+			camera.Walk(1);
+		else if (w == 0x46)
+			camera.Walk(-1);
 		return 0;
 	default:
 		return DefWindowProc(h, m, w, l);
