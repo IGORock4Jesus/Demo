@@ -11,7 +11,7 @@ Camera camera;
 namespace
 {
 	std::thread thread;
-	bool runned;
+	bool runned, initialized;
 	std::list<DeviceDependent*> dependents;
 }
 
@@ -24,9 +24,9 @@ struct Vertex
 void renderTestPrimitive(LPDIRECT3DDEVICE9 device) {
 	device->SetFVF(D3DFVF_XYZ | D3DFVF_DIFFUSE);
 	Vertex vs[] = {
-		{{-10, 10, 0}, 0xffff0000},
-		{{10, 10, 0}, 0xff00ff00},
-		{{10, -10, 0}, 0xfff0000f},
+		{{-10,  10, 0}, 0xffff0000},
+		{{ 10,  10, 0}, 0xff00ff00},
+		{{ 10, -10, 0}, 0xfff0000f},
 		{{-10, -10, 0}, 0xff000ff0},
 	};
 	device->DrawPrimitiveUP(D3DPT_TRIANGLEFAN, 2, vs, sizeof(Vertex));
@@ -51,6 +51,7 @@ void rendering() {
 }
 
 void startRendering() {
+	if (!initialized)return;
 	if (runned)return;
 	runned = true;
 	thread = std::thread(rendering);
@@ -75,14 +76,17 @@ void postReset(LPDIRECT3DDEVICE9 device) {
 bool initializeGraphics() {
 	if (!initializeRenderer())
 		return false;
+	initialized = true;
 	registerPreReset(preReset);
 	registerPostReset(postReset);
 	startRendering();
+	camera.MoveTo({ 0,0,-50 });
 	return true;
 }
 
 void releaseGraphics()
 {
+	initialized = false;
 	stopRendering();
 	releaseRenderer();
 }

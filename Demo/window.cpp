@@ -1,12 +1,21 @@
 #include "window.h"
 #include "camera.h"
+#include "graphics.h"
+#include <windowsx.h>
+#include <string>
+
 
 extern Camera camera;
+std::string gLog;
+
 
 namespace {
 	HWND handle;
 	LPCSTR windowClass = "Demo Window";
 	int width, height;
+	D3DXVECTOR2 lastPoint;
+	constexpr float MOUSE_SPEED = 0.1f;
+	bool isRButtonDown;
 }
 
 LRESULT CALLBACK WndProc(HWND h, UINT m, WPARAM w, LPARAM l) {
@@ -29,6 +38,34 @@ LRESULT CALLBACK WndProc(HWND h, UINT m, WPARAM w, LPARAM l) {
 		else if (w == 0x46)
 			camera.Walk(-1);
 		return 0;
+	case WM_KILLFOCUS:
+		stopRendering();
+		return 0;
+	case WM_SETFOCUS:
+		startRendering();
+		return 0;
+
+	case WM_RBUTTONDOWN: {
+		lastPoint = D3DXVECTOR2(GET_X_LPARAM(l), GET_Y_LPARAM(l));
+		isRButtonDown = true;
+		return 0;
+	}
+	case WM_RBUTTONUP: {
+		isRButtonDown = false;
+		return 0;
+	}
+	case WM_MOUSEMOVE:
+	{
+		if (w == MK_RBUTTON && isRButtonDown) {
+			D3DXVECTOR2 p(GET_X_LPARAM(l), GET_Y_LPARAM(l));
+			D3DXVECTOR2 diff = p - lastPoint;
+			lastPoint = p;
+			camera.Pitch(diff.y * MOUSE_SPEED);
+			camera.Yaw(diff.x * MOUSE_SPEED);
+			OutputDebugString(("diff={" + std::to_string(diff.x) + ", " + std::to_string(diff.y) + "}\n").c_str());
+		}
+	}
+	return 0;
 	default:
 		return DefWindowProc(h, m, w, l);
 	}
@@ -41,14 +78,14 @@ bool initializeWindow(HINSTANCE hinstance) {
 	wc.lpszClassName = windowClass;
 	wc.style = CS_HREDRAW | CS_VREDRAW;
 	RegisterClass(&wc);
-	width = GetSystemMetrics(SM_CXSCREEN);
-	height = GetSystemMetrics(SM_CYSCREEN);
+	width = 600;// GetSystemMetrics(SM_CXSCREEN);
+	height = 600;// GetSystemMetrics(SM_CYSCREEN);
 
 	handle = CreateWindow(windowClass, windowClass, WS_POPUPWINDOW, 0, 0, width, height, HWND_DESKTOP, nullptr, hinstance, nullptr);
 	if (!handle)
 		return false;
 
-	ShowWindow(handle, SW_MAXIMIZE);
+	ShowWindow(handle, SW_NORMAL);
 
 	return true;
 }

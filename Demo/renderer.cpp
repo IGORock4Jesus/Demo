@@ -18,6 +18,7 @@ namespace {
 }
 
 LPDIRECT3DDEVICE9 beginRenderScene() {
+	if (device == nullptr) return nullptr;
 	device->Clear(0, nullptr, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER | D3DCLEAR_STENCIL, 0xff404040, 1.0f, 0);
 	device->BeginScene();
 	return device;

@@ -11,6 +11,7 @@
     <ClCompile Include="ui.cpp" />
     <ClCompile Include="Font.cpp" />
     <ClCompile Include="DeviceDependent.cpp" />
+    <ClCompile Include="Collision.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="renderer.h" />
@@ -24,5 +25,7 @@
     <ClInclude Include="ui.h" />
     <ClInclude Include="Font.h" />
     <ClInclude Include="DeviceDependent.h" />
+    <ClInclude Include="Collision.h" />
+    <ClInclude Include="Event.h" />
   </ItemGroup>
 </Project>

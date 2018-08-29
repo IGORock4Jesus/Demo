@@ -15,9 +15,9 @@ public:
 
 	void Render(LPDIRECT3DDEVICE9 device);
 
-	void Yaw(float units);
-	void Pitch(float units);
-	void Roll(float units);
+	void Yaw(float degree);
+	void Pitch(float degree);
+	void Roll(float degree);
 
 	void MoveTo(D3DXVECTOR3 point);
 	void Move(D3DXVECTOR3 vector);

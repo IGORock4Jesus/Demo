@@ -18,16 +18,34 @@ void Camera::Render(LPDIRECT3DDEVICE9 device)
 	device->SetTransform(D3DTS_PROJECTION, &proj);
 }
 
-void Camera::Yaw(float units)
+void Camera::Yaw(float degree)
 {
+	D3DXMATRIX m;
+	D3DXMatrixRotationAxis(&m, &up, D3DXToRadian(degree));
+	D3DXVec3TransformNormal(&right, &right, &m);
+	D3DXVec3TransformNormal(&front, &front, &m);
+	D3DXVec3Normalize(&right, &right);
+	D3DXVec3Normalize(&front, &front);
 }
 
-void Camera::Pitch(float units)
+void Camera::Pitch(float degree)
 {
+	D3DXMATRIX m;
+	D3DXMatrixRotationAxis(&m, &right, D3DXToRadian(degree));
+	D3DXVec3TransformNormal(&up, &up, &m);
+	D3DXVec3TransformNormal(&front, &front, &m);
+	D3DXVec3Normalize(&up, &up);
+	D3DXVec3Normalize(&front, &front);
 }
 
-void Camera::Roll(float units)
+void Camera::Roll(float degree)
 {
+	D3DXMATRIX m;
+	D3DXMatrixRotationAxis(&m, &front, D3DXToRadian(degree));
+	D3DXVec3TransformNormal(&right, &right, &m);
+	D3DXVec3TransformNormal(&up, &up, &m);
+	D3DXVec3Normalize(&right, &right);
+	D3DXVec3Normalize(&up, &up);
 }
 
 void Camera::MoveTo(D3DXVECTOR3 point)

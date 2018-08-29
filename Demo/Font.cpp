@@ -39,5 +39,6 @@ void Font::AfterReset(LPDIRECT3DDEVICE9 device)
 
 void Font::Draw(std::string text, RECT rect)
 {
-	dxfont->DrawTextA(nullptr, text.c_str(), text.length(), &rect, DT_CENTER | DT_VCENTER, 0xffffffff);
+	if (dxfont)
+		dxfont->DrawTextA(nullptr, text.c_str(), text.length(), &rect, DT_CENTER | DT_VCENTER, 0xffffffff);
 }

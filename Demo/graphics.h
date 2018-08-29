@@ -8,3 +8,7 @@ void releaseGraphics();
 
 void registerDependent(DeviceDependent* dependent); 
 void unregisterDependent(DeviceDependent* dependent);
+
+
+void startRendering();
+void stopRendering();
